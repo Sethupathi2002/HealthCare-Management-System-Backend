@@ -54,6 +54,13 @@ public class DoctorController {
         return doctor;
     }
 
+    // To get only the role of Doctors
+    @GetMapping("/doctor-users")
+    public List<User> getDoctorUsers() {
+        logger.info("Fetching all users with doctor role");
+        return userService.findUsersByRole(User.Role.DOCTOR);
+    }
+
     @PostMapping
     public Doctor createDoctor(@RequestBody Doctor doctor) {
         if (doctor.getUser() == null || doctor.getUser().getId() == null) {
