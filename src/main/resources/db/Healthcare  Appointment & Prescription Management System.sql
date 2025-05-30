@@ -23,6 +23,14 @@ CREATE TABLE doctors (
     FOREIGN KEY (id) REFERENCES users(id)
 );
 
+ALTER TABLE doctors
+DROP FOREIGN KEY doctors_ibfk_1;
+
+ALTER TABLE doctors
+ADD CONSTRAINT doctors_ibfk_1
+FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE;
+
+
 -- 5. Table: patients
 CREATE TABLE patients (
     id VARCHAR(36) PRIMARY KEY,

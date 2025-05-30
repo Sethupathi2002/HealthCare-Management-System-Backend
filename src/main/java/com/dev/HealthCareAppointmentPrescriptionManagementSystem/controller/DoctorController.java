@@ -5,6 +5,7 @@ import com.dev.HealthCareAppointmentPrescriptionManagementSystem.entity.User;
 import com.dev.HealthCareAppointmentPrescriptionManagementSystem.exception.ResourceNotFoundException;
 import com.dev.HealthCareAppointmentPrescriptionManagementSystem.service.DoctorService;
 import com.dev.HealthCareAppointmentPrescriptionManagementSystem.service.UserService;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -28,17 +29,29 @@ public class DoctorController {
     @GetMapping
     public List<Doctor> getAllDoctors() {
         logger.info("Fetching all doctors");
-        return doctorService.getAllDoctors();
+        List<Doctor> doctors = doctorService.getAllDoctors();
+        // Eagerly fetch user details
+        doctors.forEach(doctor -> {
+            if (doctor.getUser() != null) {
+                Hibernate.initialize(doctor.getUser());
+            }
+        });
+        return doctors;
     }
 
     @GetMapping("/{id}")
     public Doctor getDoctorById(@PathVariable String id) {
         logger.info("Fetching doctor with id: {}", id);
-        return doctorService.getDoctorById(id)
+        Doctor doctor = doctorService.getDoctorById(id)
                 .orElseThrow(() -> {
                     logger.error("Doctor not found with id: {}", id);
                     return new ResourceNotFoundException("Doctor not found with id: " + id);
                 });
+        // Eagerly fetch user details
+        if (doctor.getUser() != null) {
+            Hibernate.initialize(doctor.getUser());
+        }
+        return doctor;
     }
 
     @PostMapping
